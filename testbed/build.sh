@@ -14,7 +14,7 @@ compilerFlags="-g -fdeclspec -fPIC"
 # -Wall -Werror
 includeFlags="-Isrc -I../engine/src/"
 linkerFlags="-L../bin/ -lengine -Wl,-rpath,."
-defines="-D_DEBUG -DIMPORT"
+defines="-D_DEBUG -DZIMPORT"
 
 echo "Building $assembly..."
 echo clang $cFilenames $compilerFlags -o ../bin/$assembly $defines $includeFlags $linkerFlags

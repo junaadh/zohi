@@ -10,7 +10,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "KEXPORT"
+                "ZEXPORT"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
@@ -27,7 +27,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "KEXPORT"
+                "ZEXPORT"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
@@ -44,7 +44,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "KEXPORT"
+                "ZEXPORT"
             ],
             "compilerPath": "C:\\Program Files\\LLVM\\bin\\clang.exe",
             "cStandard": "c17",

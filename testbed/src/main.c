@@ -2,13 +2,13 @@
 #include <core/asserts.h>
 
 int main(void) {
-    KFATAL("FUCK, %f", 6.9f);
-    KERROR("FUCK, %f", 6.9f);
-    KWARN("FUCK, %f", 6.9f);
-    KINFO("FUCK, %f", 6.9f);
-    KDEBUG("FUCK, %f", 6.9f);
-    KTRACE("FUCK, %f", 6.9f);
+    ZFATAL("FUCK, %f", 6.9f);
+    ZERROR("FUCK, %f", 6.9f);
+    ZWARN("FUCK, %f", 6.9f);
+    ZINFO("FUCK, %f", 6.9f);
+    ZDEBUG("FUCK, %f", 6.9f);
+    ZTRACE("FUCK, %f", 6.9f);
 
-    KASSERT(1 == 69);
+    ZASSERT(1 == 69);
     return 0;
 }

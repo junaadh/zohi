@@ -3,9 +3,9 @@
 #include "defines.h"
 
 // disable assertions by commenting out the following line
-#define KASSERTIONS_ENABLED
+#define ZASSERTIONS_ENABLED
 
-#ifdef KASSERTIONS_ENABLED
+#ifdef ZASSERTIONS_ENABLED
 #if _MSC_VER
 #include <intrin.h>
 #define debugBreak() __debugbreak()
@@ -13,9 +13,9 @@
 #define debugBreak() __builtin_trap()
 #endif
 
-KAPI void report_assertion_failure(const char *expression, const char *msg, const char *file, i32 line);
+ZAPI void report_assertion_failure(const char *expression, const char *msg, const char *file, i32 line);
 
-#define KASSERT(expr)                                                \
+#define ZASSERT(expr)                                                \
     {                                                                \
         if (expr) {                                                  \
         } else {                                                     \
@@ -24,7 +24,7 @@ KAPI void report_assertion_failure(const char *expression, const char *msg, cons
         }                                                            \
     }
 
-#define KASSERT_MSG(expr, message)                                             \
+#define ZASSERT_MSG(expr, message)                                             \
     {                                                                      \
         if (expr) {                                                        \
         } else {                                                           \
@@ -34,7 +34,7 @@ KAPI void report_assertion_failure(const char *expression, const char *msg, cons
     }
 
 #ifdef _DEBUG
-#define KASSERT_DEBUG(expr)                                          \
+#define ZASSERT_DEBUG(expr)                                          \
     {                                                                \
         if (expr) {                                                  \
         } else {                                                     \
@@ -43,10 +43,10 @@ KAPI void report_assertion_failure(const char *expression, const char *msg, cons
         }                                                            \
     }
 #else
-#define KASSERT_DEBUG(expr) // deos nothing in release builds
+#define ZASSERT_DEBUG(expr) // deos nothing in release builds
 #endif
 
 #else
-#define KASSERT(expr)
-#define KASSERT_MSG(expr)
+#define ZASSERT(expr)
+#define ZASSERT_MSG(expr)
 #endif
