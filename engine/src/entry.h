@@ -2,6 +2,7 @@
 
 #include "core/application.h"
 #include "core/logger.h"
+#include "core/zmemory.h"
 #include "game_types.h"
 
 // externally defined function to create a game
@@ -11,6 +12,8 @@ extern b8 create_game(game* game);
  * entry point into the game
  */
 int main(void) {
+    initialize_memory();
+
     // rqst the game instance from the application
     game game_inst;
     if (!create_game(&game_inst)) {
@@ -36,5 +39,6 @@ int main(void) {
         return 2;
     }
 
+    shutdown_memory();
     return 0;
 }
