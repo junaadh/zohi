@@ -15,4 +15,4 @@
 -lX11-xcb
 -lxkbcommon
 -L$VULKAN_SDK/lib
--Wl,-rpath,.
+-Wl,-rpath,./bin

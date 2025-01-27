@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set echo on
 
 mkdir -p ../bin
 

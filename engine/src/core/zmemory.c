@@ -73,7 +73,7 @@ void *zcopy_memory(void *block, const void *source, u64 size) {
     return platform_copy_mem(block, source, size);
 }
 
-void *set_memory(void *block, i32 value, u64 size) {
+void *zset_memory(void *block, i32 value, u64 size) {
     return platform_set_mem(block, value, size);
 }
 
