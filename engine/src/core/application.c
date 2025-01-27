@@ -1,10 +1,11 @@
 #include "application.h"
+#include "core/event.h"
+#include "core/input.h"
 #include "core/zmemory.h"
 #include "defines.h"
 #include "game_types.h"
 #include "logger.h"
 #include "platform/platform.h"
-#include "core/event.h"
 
 typedef struct application_state {
     game *game_inst;
@@ -19,6 +20,10 @@ typedef struct application_state {
 static b8 initialized = FALSE;
 static application_state app_state;
 
+// event handlers
+b8 application_on_event(u16 code, void *sender, void *listener_inst, event_context context);
+b8 application_on_key(u16 code, void *sender, void *listener_inst, event_context context);
+
 b8 application_create(game *game_inst) {
     if (initialized) {
         ZERROR("application_create called more than once");
@@ -29,6 +34,7 @@ b8 application_create(game *game_inst) {
 
     // init subsystems
     initialize_logging();
+    input_initialize();
 
     // TODO: remove this
     ZFATAL("HELLO, %f", 6.9f);
@@ -45,6 +51,10 @@ b8 application_create(game *game_inst) {
         ZERROR("event system failed initialization. application can continue");
         return FALSE;
     }
+
+    event_register(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
+    event_register(EVENT_CODE_KEY_PRESSED, 0, application_on_key);
+    event_register(EVENT_CODE_KEY_RELEASED, 0, application_on_key);
 
     if (!platform_startup(
             &app_state.platform,
@@ -88,12 +98,63 @@ b8 application_run() {
                 app_state.is_running = FALSE;
                 break;
             }
+
+            // NOTE: input update/state copying should always be handled
+            // after any input should be recorded
+            // As a safety input is the last to be updated before this frame ends
+            input_update(0);
         }
     }
 
     app_state.is_running = FALSE;
+
+    // shutdown event system
+    event_unregister(EVENT_CODE_APPLICATION_QUIT, 0, application_on_event);
+    event_unregister(EVENT_CODE_KEY_PRESSED, 0, application_on_key);
+    event_unregister(EVENT_CODE_KEY_RELEASED, 0, application_on_key);
+
     event_shutdown();
+    input_shutdown();
+
     platform_shutdown(&app_state.platform);
 
     return TRUE;
+}
+
+b8 application_on_event(u16 code, void *sender, void *listener_inst, event_context context) {
+    switch (code) {
+    case EVENT_CODE_APPLICATION_QUIT: {
+        ZINFO("EVENT_CODE_APPLICATION_QUIT recieved, shutting down.\n");
+        app_state.is_running = FALSE;
+        return TRUE;
+    }
+    }
+    return FALSE;
+}
+
+b8 application_on_key(u16 code, void *sender, void *listener_inst, event_context context) {
+    if (code == EVENT_CODE_KEY_PRESSED) {
+        u16 key_code = context.data.u16[0];
+        if (key_code == KEY_ESCAPE) {
+            // NOTE: techincally firing an event to itself, but there may be other listeners
+            event_context data = {};
+            event_fire(EVENT_CODE_APPLICATION_QUIT, 0, data);
+
+            // block anything from processing this
+            return TRUE;
+        } else if (key_code == KEY_A) {
+            // example on checking for a key
+            ZDEBUG("Explicit: A key pressed");
+        } else {
+            ZDEBUG("'%c' key pressed in window", key_code);
+        }
+    } else if (code == EVENT_CODE_KEY_RELEASED) {
+        u16 key_code = context.data.u16[0];
+        if (key_code == KEY_B) {
+            ZDEBUG("Explicit: B key released");
+        } else {
+            ZDEBUG("'%c' key released in window", key_code);
+        }
+    }
+    return FALSE;
 }
