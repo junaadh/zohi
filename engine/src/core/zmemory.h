@@ -28,9 +28,9 @@ typedef enum memory_tag {
 ZAPI void initialize_memory();
 ZAPI void shutdown_memory();
 
-ZAPI void* zallocate(u64 size, memory_tag tag);
-ZAPI void zfree(void* block, u64 size, memory_tag tag);
-ZAPI void* zzero_memory(void* block, u64 size);
-ZAPI void* zcopy_memory(void* block, const void* source, u64 size);
-ZAPI void* set_memory(void* block, i32 value, u64 size);
-ZAPI char* get_memory_usage_str();
+ZAPI void *zallocate(u64 size, memory_tag tag);
+ZAPI void zfree(void *block, u64 size, memory_tag tag);
+ZAPI void *zzero_memory(void *block, u64 size);
+ZAPI void *zcopy_memory(void *block, const void *source, u64 size);
+ZAPI void *zset_memory(void *block, i32 value, u64 size);
+ZAPI char *get_memory_usage_str();

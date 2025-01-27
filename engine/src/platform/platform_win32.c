@@ -5,14 +5,15 @@
 
 #include "core/logger.h"
 
+#include <stdlib.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <stdlib.h>
 
 typedef internal_state {
     HINSTANCE h_instance;
     HWND hwnd;
-} internal_state;
+}
+internal_state;
 
 // Clock
 static f64 clock_frequency;
@@ -21,13 +22,12 @@ static LARGE_INTEGER start_time;
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
 b8 platform_startup(
-    platform_state* plat_state,
-    const char* application_name,
+    platform_state *plat_state,
+    const char *application_name,
     i32 x, i32 y,
-    i32 width, i32 height
-) {
+    i32 width, i32 height) {
     plat_state->internal_state = malloc(sizeof(internal_state));
-    internal_state *state = (internal_state*)plat_state->internal_state;
+    internal_state *state = (internal_state *)plat_state->internal_state;
 
     state->h_instance = GetModuleHandleA(0);
 
@@ -36,14 +36,14 @@ b8 platform_startup(
     WINDCLASSA wc;
     memset(&wc, 0, sizeof(wc));
 
-    wc.style = CS_DBLCLKS;  // Get double-clicks
+    wc.style = CS_DBLCLKS; // Get double-clicks
     wc.lpfnWndProc = win32_process_message;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = state->h_instance;
     wc.hIcon = icon;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // NULL; // Manage the cursor manually
-    wc.hbrBackground = NULL;                   // Transparent
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW); // NULL; // Manage the cursor manually
+    wc.hbrBackground = NULL;                  // Transparent
     wc.lpszClassName = "zohi_window_class";
 
     if (!RegisterClassA(&wc)) {
@@ -96,7 +96,7 @@ b8 platform_startup(
     }
 
     // Show the window
-    b32 should_activate = 1;  // TODO: if the window should not accept input, this should be false.
+    b32 should_activate = 1; // TODO: if the window should not accept input, this should be false.
     i32 show_window_command_flags = should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
     // If initially minimized, use SW_MINIMIZE : SW_SHOWMINNOACTIVE;
     // If initially maximized, use SW_SHOWMAXIMIZED : SW_MAXIMIZE
@@ -111,7 +111,7 @@ b8 platform_startup(
     return TRUE;
 }
 
-void platform_shutdown(platform_state* plat_state) {
+void platform_shutdown(platform_state *plat_state) {
     // Simply cold-cast to the known type.
     internal_state *state = (internal_state *)plat_state->internal_state;
 
@@ -121,7 +121,7 @@ void platform_shutdown(platform_state* plat_state) {
     }
 }
 
-b8 platform_pump_messages(platform_state* plat_state) {
+b8 platform_pump_messages(platform_state *plat_state) {
     MSG message;
     while (PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&message);
@@ -131,11 +131,11 @@ b8 platform_pump_messages(platform_state* plat_state) {
     return TRUE;
 }
 
-void* platform_allocate(u64 size, b8 aligned) {
+void *platform_allocate(u64 size, b8 aligned) {
     return malloc(size);
 }
 
-void platform_free(void* block, b8 aligned) {
+void platform_free(void *block, b8 aligned) {
     free(block);
 }
 
@@ -151,7 +151,7 @@ void *platform_set_mem(void *dest, i32 value, u64 size) {
     return memset(dest, value, size);
 }
 
-void platform_console_write(const char* message, u8 color) {
+void platform_console_write(const char *message, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
     static u8 levels[6] = {64, 4, 6, 2, 1, 8};
@@ -162,7 +162,7 @@ void platform_console_write(const char* message, u8 color) {
     WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), message, (DWORD)length, number_written, 0);
 }
 
-void platform_console_write_error(const char* message, u8 color) {
+void platform_console_write_error(const char *message, u8 color) {
     HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
     static u8 levels[6] = {64, 4, 6, 2, 1, 8};
@@ -185,56 +185,56 @@ void platform_sleep(u64 ms) {
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
-        case WM_ERASEBKGND:
-            // Notify the OS that erasing will be handled by the application to prevent flicker.
-            return 1;
-        case WM_CLOSE:
-            // TODO: Fire an event for the application to quit.
-            return 0;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return 0;
-        case WM_SIZE: {
-            // Get the updated size.
-            // RECT r;
-            // GetClientRect(hwnd, &r);
-            // u32 width = r.right - r.left;
-            // u32 height = r.bottom - r.top;
+    case WM_ERASEBKGND:
+        // Notify the OS that erasing will be handled by the application to prevent flicker.
+        return 1;
+    case WM_CLOSE:
+        // TODO: Fire an event for the application to quit.
+        return 0;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    case WM_SIZE: {
+        // Get the updated size.
+        // RECT r;
+        // GetClientRect(hwnd, &r);
+        // u32 width = r.right - r.left;
+        // u32 height = r.bottom - r.top;
 
-            // TODO: Fire an event for window resize.
-        } break;
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-        case WM_KEYUP:
-        case WM_SYSKEYUP: {
-            // Key pressed/released
-            //b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-            // TODO: input processing
+        // TODO: Fire an event for window resize.
+    } break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+    case WM_KEYUP:
+    case WM_SYSKEYUP: {
+        // Key pressed/released
+        // b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
+        // TODO: input processing
 
-        } break;
-        case WM_MOUSEMOVE: {
-            // Mouse move
-            //i32 x_position = GET_X_LPARAM(l_param);
-            //i32 y_position = GET_Y_LPARAM(l_param);
-            // TODO: input processing.
-        } break;
-        case WM_MOUSEWHEEL: {
-            // i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
-            // if (z_delta != 0) {
-            //     // Flatten the input to an OS-independent (-1, 1)
-            //     z_delta = (z_delta < 0) ? -1 : 1;
-            //     // TODO: input processing.
-            // }
-        } break;
-        case WM_LBUTTONDOWN:
-        case WM_MBUTTONDOWN:
-        case WM_RBUTTONDOWN:
-        case WM_LBUTTONUP:
-        case WM_MBUTTONUP:
-        case WM_RBUTTONUP: {
-            //b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
-            // TODO: input processing.
-        } break;
+    } break;
+    case WM_MOUSEMOVE: {
+        // Mouse move
+        // i32 x_position = GET_X_LPARAM(l_param);
+        // i32 y_position = GET_Y_LPARAM(l_param);
+        // TODO: input processing.
+    } break;
+    case WM_MOUSEWHEEL: {
+        // i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
+        // if (z_delta != 0) {
+        //     // Flatten the input to an OS-independent (-1, 1)
+        //     z_delta = (z_delta < 0) ? -1 : 1;
+        //     // TODO: input processing.
+        // }
+    } break;
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP: {
+        // b8 pressed = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN;
+        //  TODO: input processing.
+    } break;
     }
 
     return DefWindowProcA(hwnd, msg, w_param, l_param);

@@ -25,7 +25,7 @@ typedef enum log_level {
 b8 initialize_logging();
 void shutdown_logging();
 
-ZAPI void log_output(log_level level, const char* msg, ...);
+ZAPI void log_output(log_level level, const char *msg, ...);
 
 // logs a fatal level msg
 #define ZFATAL(msg, ...) log_output(LOG_LEVLEL_FATAL, msg, ##__VA_ARGS__);

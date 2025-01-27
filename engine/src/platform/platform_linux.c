@@ -17,8 +17,8 @@
 #include <unistd.h>
 #endif
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct internal_state {
@@ -85,20 +85,20 @@ b8 platform_startup(
                        XCB_EVENT_MASK_STRUCTURE_NOTIFY;
 
     // values to be sent to xcb (colors, events)
-    u32 value_list[] = { state->screen->black_pixel, event_values };
+    u32 value_list[] = {state->screen->black_pixel, event_values};
 
     // Create the window
     xcb_void_cookie_t cookie = xcb_create_window(
         state->connection,
-        XCB_COPY_FROM_PARENT,  // depth
+        XCB_COPY_FROM_PARENT, // depth
         state->window,
-        state->screen->root,            // parent
-        x,                              //x
-        y,                              //y
-        width,                          //width
-        height,                         //height
-        0,                              // No border
-        XCB_WINDOW_CLASS_INPUT_OUTPUT,  //class
+        state->screen->root,           // parent
+        x,                             // x
+        y,                             // y
+        width,                         // width
+        height,                        // height
+        0,                             // No border
+        XCB_WINDOW_CLASS_INPUT_OUTPUT, // class
         state->screen->root_visual,
         event_mask,
         value_list);
@@ -110,7 +110,7 @@ b8 platform_startup(
         state->window,
         XCB_ATOM_WM_NAME,
         XCB_ATOM_STRING,
-        8,  // data should be viewed 8 bits at a time
+        8, // data should be viewed 8 bits at a time
         strlen(application_name),
         application_name);
 
@@ -126,11 +126,11 @@ b8 platform_startup(
         0,
         strlen("WM_PROTOCOLS"),
         "WM_PROTOCOLS");
-    xcb_intern_atom_reply_t* wm_delete_reply = xcb_intern_atom_reply(
+    xcb_intern_atom_reply_t *wm_delete_reply = xcb_intern_atom_reply(
         state->connection,
         wm_delete_cookie,
         NULL);
-    xcb_intern_atom_reply_t* wm_protocols_reply = xcb_intern_atom_reply(
+    xcb_intern_atom_reply_t *wm_protocols_reply = xcb_intern_atom_reply(
         state->connection,
         wm_protocols_cookie,
         NULL);
@@ -162,7 +162,7 @@ b8 platform_startup(
 
 void platform_shutdown(platform_state *plat_state) {
     // simply cold cast to known type
-    internal_state *state = (internal_state *) plat_state->internal_state;
+    internal_state *state = (internal_state *)plat_state->internal_state;
 
     // turn on key repreates since global
     XAutoRepeatOn(state->display);
@@ -172,10 +172,10 @@ void platform_shutdown(platform_state *plat_state) {
 
 b8 platform_pump_messages(platform_state *plat_state) {
     // Simply cold-cast to the known type.
-    internal_state* state = (internal_state*)plat_state->internal_state;
+    internal_state *state = (internal_state *)plat_state->internal_state;
 
-    xcb_generic_event_t* event;
-    xcb_client_message_event_t* cm;
+    xcb_generic_event_t *event;
+    xcb_client_message_event_t *cm;
 
     b8 quit_flagged = FALSE;
 
@@ -188,33 +188,33 @@ b8 platform_pump_messages(platform_state *plat_state) {
 
         // Input events
         switch (event->response_type & ~0x80) {
-            case XCB_KEY_PRESS:
-            case XCB_KEY_RELEASE: {
-                // TODO: Key presses and releases
-            } break;
-            case XCB_BUTTON_PRESS:
-            case XCB_BUTTON_RELEASE: {
-                // TODO: Mouse button presses and releases
+        case XCB_KEY_PRESS:
+        case XCB_KEY_RELEASE: {
+            // TODO: Key presses and releases
+        } break;
+        case XCB_BUTTON_PRESS:
+        case XCB_BUTTON_RELEASE: {
+            // TODO: Mouse button presses and releases
+        }
+        case XCB_MOTION_NOTIFY:
+            // TODO: mouse movement
+            break;
+
+        case XCB_CONFIGURE_NOTIFY: {
+            // TODO: Resizing
+        }
+
+        case XCB_CLIENT_MESSAGE: {
+            cm = (xcb_client_message_event_t *)event;
+
+            // Window close
+            if (cm->data.data32[0] == state->wm_delete_win) {
+                quit_flagged = TRUE;
             }
-            case XCB_MOTION_NOTIFY:
-                // TODO: mouse movement
-                break;
-
-            case XCB_CONFIGURE_NOTIFY: {
-                // TODO: Resizing
-            }
-
-            case XCB_CLIENT_MESSAGE: {
-                cm = (xcb_client_message_event_t*)event;
-
-                // Window close
-                if (cm->data.data32[0] == state->wm_delete_win) {
-                    quit_flagged = TRUE;
-                }
-            } break;
-            default:
-                // Something else
-                break;
+        } break;
+        default:
+            // Something else
+            break;
         }
 
         free(event);
@@ -244,13 +244,13 @@ void *platform_set_mem(void *dest, i32 value, u64 size) {
 
 void platform_console_write(const char *message, u8 color) {
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-    const char* color_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
+    const char *color_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 
 void platform_console_write_error(const char *message, u8 color) {
     // FATAL,ERROR,WARN,INFO,DEBUG,TRACE
-    const char* color_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
+    const char *color_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
     printf("\033[%sm%s\033[0m", color_strings[color], message);
 }
 

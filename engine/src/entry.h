@@ -6,9 +6,9 @@
 #include "game_types.h"
 
 // externally defined function to create a game
-extern b8 create_game(game* game);
+extern b8 create_game(game *game);
 
-/** 
+/**
  * entry point into the game
  */
 int main(void) {
@@ -26,7 +26,7 @@ int main(void) {
         ZFATAL("The game's function pointers must be assigned");
         return -2;
     }
-    
+
     // initialization
     if (!application_create(&game_inst)) {
         ZINFO("Application failed to create!\n");
