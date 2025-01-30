@@ -13,3 +13,8 @@ char *string_duplicate(const char *str) {
     zcopy_memory(copy, str, length + 1);
     return copy;
 }
+
+// case-sensitive string comparison, true if the same, else false
+b8 strings_equal(const char *str0, const char *str1) {
+    return strcmp(str0, str1) == 0;
+}
